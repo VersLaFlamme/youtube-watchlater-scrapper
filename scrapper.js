@@ -28,7 +28,7 @@ dotenv.config();
   await emailInput.type(process.env.EMAIL);
   await page.click('#identifierNext');
   await waitForProgressBar();
-  const workspaceAccountButton = await page.waitForSelector('.vxx8jf');
+  const workspaceAccountButton = await page.waitForSelector('div.vxx8jf > div');
   await workspaceAccountButton.click();
   await waitForProgressBar();
   const passwordInput = await page.waitForSelector('#password');
