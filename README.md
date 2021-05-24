@@ -15,4 +15,4 @@ PASSWORD=test
 npm run start
 ```
 ## Downloads
-All videos are download to the './downloads' directory
+All videos are downloaded to the './downloads' directory
