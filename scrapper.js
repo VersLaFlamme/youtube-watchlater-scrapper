@@ -3,6 +3,7 @@ import stealthPlugin from 'puppeteer-extra-plugin-stealth';
 import youtubeDl from 'youtube-dl';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import sanitize from 'sanitize-filename'
 
 puppeteer.use(stealthPlugin());
 dotenv.config();
@@ -11,7 +12,7 @@ dotenv.config();
   const browser = await puppeteer.launch({
     defaultViewport: null,
     args: ['--start-maximized', '--window-size=1920,1080'],
-    headless: ,
+    headless: true,
   });
 
   const page = await browser.newPage();
@@ -35,6 +36,7 @@ dotenv.config();
   await passwordInput.type(process.env.PASSWORD);
   await page.click('#passwordNext');
   await page.waitForNavigation({waitUntil: 'networkidle0'});
+  
   console.log('Please, login on your mobile device!');
   await page.waitForTimeout(10000);
   await waitForProgressBar();
@@ -65,7 +67,7 @@ function downloadVideos(links) {
 
     video.on('info', function(info) {
       console.log(`Downloading video #${i+1}: ` + info.title + '. Size: ' + info.size);
-      video.pipe(fs.createWriteStream(`${currentDir}/${i+1}. ${info.title}.mp4`));
+      video.pipe(fs.createWriteStream(`${currentDir}/${i+1}. ${sanitize(info.title)}.mp4`));
     });
 
     video.on('end', function() {
