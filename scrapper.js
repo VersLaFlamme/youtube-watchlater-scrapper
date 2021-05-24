@@ -11,7 +11,7 @@ dotenv.config();
   const browser = await puppeteer.launch({
     defaultViewport: null,
     args: ['--start-maximized', '--window-size=1920,1080'],
-    headless: true,
+    headless: false,
   });
 
   const page = await browser.newPage();
@@ -28,7 +28,7 @@ dotenv.config();
   await emailInput.type(process.env.EMAIL);
   await page.click('#identifierNext');
   await waitForProgressBar();
-  const workspaceAccountButton = await page.waitForSelector('.vxx8jf');
+  const workspaceAccountButton = await page.$x("//h2[contains(text(), 'Workspace')]")[0];;
   await workspaceAccountButton.click();
   await waitForProgressBar();
   const passwordInput = await page.waitForSelector('#password');
