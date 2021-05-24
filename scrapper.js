@@ -19,7 +19,7 @@ dotenv.config();
   await page.goto('https://youtube.com');
   
   async function waitForProgressBar() {
-    return await page.waitForSelector('[aria-busy="true"]', {hidden: true});
+    return page.waitForSelector('[aria-busy="true"]', {hidden: true});
   }
 
   const youtubeSignInButton = await page.waitForSelector('tp-yt-paper-button[aria-label="Sign in"]');
@@ -29,6 +29,7 @@ dotenv.config();
   await emailInput.type(process.env.EMAIL);
   await page.click('#identifierNext');
   await waitForProgressBar();
+  await page.waitForTimeout(2000);
   const workspaceAccountButton = await page.waitForXPath("//div[contains(text(), 'An account owned by')]");
   await workspaceAccountButton.click();
   await waitForProgressBar();
