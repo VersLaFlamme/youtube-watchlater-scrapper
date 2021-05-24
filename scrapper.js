@@ -29,14 +29,14 @@ dotenv.config();
   await emailInput.type(process.env.EMAIL);
   await page.click('#identifierNext');
   await waitForProgressBar();
-  const workspaceAccountButton = await page.waitForSelector('li:nth-child(1) > div > div');
+  const workspaceAccountButton = await page.waitForXPath("//div[contains(text(), 'An account owned by')]");
   await workspaceAccountButton.click();
   await waitForProgressBar();
   const passwordInput = await page.waitForSelector('#password');
   await passwordInput.type(process.env.PASSWORD);
   await page.click('#passwordNext');
   await page.waitForNavigation({waitUntil: 'networkidle0'});
-  
+
   console.log('Please, login on your mobile device!');
   await page.waitForTimeout(10000);
   await waitForProgressBar();
