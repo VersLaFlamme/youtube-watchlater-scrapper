@@ -2,7 +2,7 @@
   "name": "youtube-watch-later-scrapper",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "scrapper.js",
   "scripts": {
     "start": "node scrapper.js"
   },
@@ -11,14 +11,10 @@
   "license": "ISC",
   "devDependencies": {
     "dotenv": "^10.0.0",
-    "eslint": "^7.27.0",
-    "eslint-config-google": "^0.14.0",
     "puppeteer": "^9.1.1",
     "puppeteer-extra": "^3.1.18",
     "puppeteer-extra-plugin-stealth": "^2.7.8",
-    "youtube-dl": "^3.5.0",
-    "youtube-dl-exec": "^1.2.3",
-    "ytdl-core": "^4.8.0"
+    "youtube-dl": "^3.5.0"
   },
   "type": "module"
 }
