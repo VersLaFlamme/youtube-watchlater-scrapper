@@ -24,12 +24,18 @@ dotenv.config();
   await emailInput.type(process.env.EMAIL);
   await page.click('#identifierNext');
   await page.waitForSelector('[aria-busy="true"]', {hidden: true});
+  const workspaceAccountButton = await page.waitForSelector('h2.TrZEUc');
+  await workspaceAccountButton.click();
+  await page.waitForSelector('[aria-busy="true"]', {hidden: true});
   const passwordInput = await page.waitForSelector('#password');
   await passwordInput.type(process.env.PASSWORD);
   await page.click('#passwordNext');
   await page.waitForNavigation({waitUntil: 'networkidle0'});
+  console.log('Please, login on your mobile device!');
+  await page.waitForTimeout(5000);
 
-  await page.click('a[href="/playlist?list=WL"');
+  const watchLaterButton = await page.waitForSelector('a[href="/playlist?list=WL"');
+  await watchLaterButton.click();
   await page.waitForSelector('#playlist-thumbnails');
   const links = await page.$$eval('#thumbnail > a[id="thumbnail"]',
       (list) => list.map((elm) => elm.href.split('&list=WL&index=')[0]));
