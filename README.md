@@ -5,7 +5,7 @@ This scrapper downloads all #watch later# videos from your youtube account
 npm i
 ```
 ## Credentials
-create .env file in the root directory
+create .env file in the root directory with your google email and password
 ```
 EMAIL=test@gmail.com
 PASSWORD=test
