@@ -16,6 +16,10 @@ dotenv.config();
 
   const page = await browser.newPage();
   await page.goto('https://youtube.com');
+  
+  async function waitForProgressBar() {
+    return await page.waitForSelector('[aria-busy="true"]', {hidden: true});
+  }
 
   const youtubeSignInButton = await page.waitForSelector('tp-yt-paper-button[aria-label="Sign in"]');
   await youtubeSignInButton.click();
@@ -23,16 +27,17 @@ dotenv.config();
   const emailInput = await page.waitForSelector('#identifierId');
   await emailInput.type(process.env.EMAIL);
   await page.click('#identifierNext');
-  await page.waitForSelector('[aria-busy="true"]', {hidden: true});
-  const workspaceAccountButton = await page.waitForSelector('h2.TrZEUc');
+  await waitForProgressBar();
+  const workspaceAccountButton = await page.waitForSelector('.vxx8jf');
   await workspaceAccountButton.click();
-  await page.waitForSelector('[aria-busy="true"]', {hidden: true});
+  await waitForProgressBar();
   const passwordInput = await page.waitForSelector('#password');
   await passwordInput.type(process.env.PASSWORD);
   await page.click('#passwordNext');
   await page.waitForNavigation({waitUntil: 'networkidle0'});
   console.log('Please, login on your mobile device!');
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(10000);
+  await waitForProgressBar();
 
   const watchLaterButton = await page.waitForSelector('a[href="/playlist?list=WL"');
   await watchLaterButton.click();
@@ -45,7 +50,6 @@ dotenv.config();
   downloadVideos(links);
 })();
 
-// eslint-disable-next-line require-jsdoc
 function downloadVideos(links) {
   console.log('Downloading watch later list');
   const currentDir = './downloads/' + new Date().toISOString().split('T')[0];
