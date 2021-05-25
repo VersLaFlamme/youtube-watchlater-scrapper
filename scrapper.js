@@ -34,21 +34,21 @@ dotenv.config();
   await page.click('#identifierNext');
   await waitForProgressBar();
 
-  if (await page.waitForXPath("//div[contains(text(), 'An account owned by')]"), {timeout: 3000}) {
-    const workspaceAccountButton = await page.waitForXPath("//div[contains(text(), 'An account owned by')]");
-    await page.waitForTimeout(2000);
-    await workspaceAccountButton.click();
-    await waitForProgressBar();
-  }
+  // if (await page.waitForXPath("//div[contains(text(), 'An account owned by')]"), {timeout: 3000}) {
+  //   const workspaceAccountButton = await page.waitForXPath("//div[contains(text(), 'An account owned by')]");
+  //   await page.waitForTimeout(2000);
+  //   await workspaceAccountButton.click();
+  //   await waitForProgressBar();
+  // }
 
   const passwordInput = await page.waitForSelector('#password');
   await passwordInput.type(process.env.PASSWORD);
   await page.click('#passwordNext');
   await page.waitForNavigation({waitUntil: 'networkidle0'});
 
-  console.log('Please, login on your mobile device!');
-  await page.waitForTimeout(10000);
-  await waitForProgressBar();
+  // console.log('Please, login on your mobile device!');
+  // await page.waitForTimeout(10000);
+  // await waitForProgressBar();
 
   const watchLaterButton = await page.waitForSelector('a[href="/playlist?list=WL"');
   await watchLaterButton.click();
@@ -71,9 +71,6 @@ dotenv.config();
 
     await new Promise((resolve, reject) => {
       video.pipe(fs.createWriteStream(output));
-      video.once('response', () => {
-        startTime = Date.now();
-      });
       video.on('progress', (chunkLength, downloaded, total) => {
         const percent = downloaded / total;
         readline.cursorTo(process.stdout, 0);
