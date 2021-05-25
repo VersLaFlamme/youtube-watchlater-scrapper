@@ -1,9 +1,10 @@
 import puppeteer from 'puppeteer-extra';
 import stealthPlugin from 'puppeteer-extra-plugin-stealth';
-import youtubeDl from 'youtube-dl';
-import fs from 'fs';
 import dotenv from 'dotenv';
-import sanitize from 'sanitize-filename'
+import ytdl from 'ytdl-core';
+import fs from 'fs';
+import readline from 'readline';
+import sanitize from 'sanitize-filename';
 
 puppeteer.use(stealthPlugin());
 dotenv.config();
@@ -11,8 +12,11 @@ dotenv.config();
 (async () => {
   const browser = await puppeteer.launch({
     defaultViewport: null,
-    args: ['--start-maximized', '--window-size=1920,1080'],
-    headless: true,
+    args: [
+      '--start-maximized', 
+      // '--window-size=1920,1080',
+    ],
+    headless: false,
   });
 
   const page = await browser.newPage();
@@ -29,10 +33,14 @@ dotenv.config();
   await emailInput.type(process.env.EMAIL);
   await page.click('#identifierNext');
   await waitForProgressBar();
-  await page.waitForTimeout(2000);
-  const workspaceAccountButton = await page.waitForXPath("//div[contains(text(), 'An account owned by')]");
-  await workspaceAccountButton.click();
-  await waitForProgressBar();
+
+  if (await page.waitForXPath("//div[contains(text(), 'An account owned by')]"), {timeout: 3000}) {
+    const workspaceAccountButton = await page.waitForXPath("//div[contains(text(), 'An account owned by')]");
+    await page.waitForTimeout(2000);
+    await workspaceAccountButton.click();
+    await waitForProgressBar();
+  }
+
   const passwordInput = await page.waitForSelector('#password');
   await passwordInput.type(process.env.PASSWORD);
   await page.click('#passwordNext');
@@ -50,29 +58,30 @@ dotenv.config();
 
   await browser.close();
 
-  downloadVideos(links);
-})();
-
-function downloadVideos(links) {
-  console.log('Downloading watch later list');
   const currentDir = './downloads/' + new Date().toISOString().split('T')[0];
   if (!fs.existsSync(currentDir)) {
     fs.mkdirSync(currentDir);
   }
+
+  console.log('Start downloading videos');
   for (let i = 0; i < links.length; i++) {
-    const video = youtubeDl(
-        links[i],
-        ['--format=18'],
-        {cwd: './downloads'},
-    );
+    const video = ytdl(links[i]);
+    const info = await ytdl.getInfo(links[i]);
+    const output = `${currentDir}/${sanitize(info.videoDetails.title)}.mp4`;
 
-    video.on('info', function(info) {
-      console.log(`Downloading video #${i+1}: ` + info.title + '. Size: ' + info.size);
-      video.pipe(fs.createWriteStream(`${currentDir}/${i+1}. ${sanitize(info.title)}.mp4`));
-    });
-
-    video.on('end', function() {
-      console.log(`Video #${i+1} downloaded`);
+    await new Promise((resolve, reject) => {
+      let startTime;
+      video.pipe(fs.createWriteStream(output));
+      video.once('response', () => {
+        startTime = Date.now();
+      });
+      video.on('progress', (chunkLength, downloaded, total) => {
+        const percent = downloaded / total;
+        readline.cursorTo(process.stdout, 0);
+        process.stdout.write(`Downloading video #${i+1}: ${info.videoDetails.title}. ${(percent * 100).toFixed(2)}% downloaded `);
+      });
+      video.on('end', () => resolve(process.stdout.write('\n')));
+      video.on('error', reject);
     });
   }
-}
+})();
