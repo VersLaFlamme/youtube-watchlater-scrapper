@@ -70,7 +70,6 @@ dotenv.config();
     const output = `${currentDir}/${sanitize(info.videoDetails.title)}.mp4`;
 
     await new Promise((resolve, reject) => {
-      let startTime;
       video.pipe(fs.createWriteStream(output));
       video.once('response', () => {
         startTime = Date.now();
