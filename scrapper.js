@@ -14,9 +14,9 @@ dotenv.config();
     defaultViewport: null,
     args: [
       '--start-maximized', 
-      // '--window-size=1920,1080',
+      '--window-size=1920,1080',
     ],
-    headless: false,
+    headless: true,
   });
 
   const page = await browser.newPage();
