@@ -34,7 +34,7 @@ dotenv.config();
   await page.click('#identifierNext');
   await waitForProgressBar();
 
-  if (await page.waitForXPath("//div[contains(text(), 'An account owned by')]"), {timeout: 3000}) {
+  if ((await page.$x("//div[contains(text(), 'An account owned by')]", {timeout: 3000})).length > 0) {
     const workspaceAccountButton = await page.waitForXPath("//div[contains(text(), 'An account owned by')]");
     await page.waitForTimeout(2000);
     await workspaceAccountButton.click();
@@ -74,10 +74,19 @@ dotenv.config();
       video.on('progress', (chunkLength, downloaded, total) => {
         const percent = downloaded / total;
         readline.cursorTo(process.stdout, 0);
-        process.stdout.write(`Downloading video #${i+1}: ${info.videoDetails.title}. ${(percent * 100).toFixed(2)}% downloaded `);
+        process.stdout.write(`Downloading video #${i+1}: ${info.videoDetails.title}. Size: ${total} MB. ${(percent * 100).toFixed(2)}% downloaded `);
       });
       video.on('end', () => resolve(process.stdout.write('\n')));
       video.on('error', reject);
+    }).catch((e) => {
+      console.error(e, 'Download failed, retry');
+      video.pipe(fs.createWriteStream(output));
+      video.on('progress', (chunkLength, downloaded, total) => {
+        const percent = downloaded / total;
+        readline.cursorTo(process.stdout, 0);
+        process.stdout.write(`Downloading video #${i+1}: ${info.videoDetails.title}. ${(percent * 100).toFixed(2)}% downloaded `);
+      });
+      video.on('end', () => process.stdout.write('\n'));
     });
   }
 })();
