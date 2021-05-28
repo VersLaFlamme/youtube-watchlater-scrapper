@@ -34,12 +34,10 @@ dotenv.config();
   await page.click('#identifierNext');
   await waitForProgressBar();
 
-  if ((await page.$x("//div[contains(text(), 'An account owned by')]", {timeout: 3000})).length > 0) {
-    const workspaceAccountButton = await page.waitForXPath("//div[contains(text(), 'An account owned by')]");
-    await page.waitForTimeout(2000);
-    await workspaceAccountButton.click();
-    await waitForProgressBar();
-  }
+  const workspaceAccountButton = await page.waitForXPath("//div[contains(text(), 'An account owned by')]");
+  await page.waitForTimeout(2000);
+  await workspaceAccountButton.click();
+  await waitForProgressBar();
 
   const passwordInput = await page.waitForSelector('#password');
   await passwordInput.type(process.env.PASSWORD);
